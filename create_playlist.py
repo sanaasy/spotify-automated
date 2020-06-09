@@ -1,27 +1,25 @@
 import json
 import os
 
-from exceptions import ResponseException
-from secrets import spotify_user_id, spotify_token
-
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 import requests
 import youtube_dl
 
+from exceptions import ResponseException
+from secrets import spotify_token, spotify_user_id
+
 
 class CreatePlaylist:
-
     def __init__(self):
-        self.user_id = spotify_user_id
-        self.spotify_token = spotify_token
         self.youtube_client = self.get_youtube_client()
         self.all_song_info = {}
 
-    # log into youtube
-
     def get_youtube_client(self):
+        """ Log Into Youtube, Copied from Youtube Data API """
+        # Disable OAuthlib's HTTPS verification when running locally.
+        # *DO NOT* leave this option enabled in production.
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
         api_service_name = "youtube"
@@ -40,8 +38,8 @@ class CreatePlaylist:
 
         return youtube_client
 
-    # grab our liked videos
     def get_liked_videos(self):
+        """Grab Our Liked Videos & Create A Dictionary Of Important Song Information"""
         request = self.youtube_client.videos().list(
             part="snippet,contentDetails,statistics",
             myRating="like"
@@ -72,11 +70,11 @@ class CreatePlaylist:
 
                 }
 
-    # create a new playlist
     def create_playlist(self):
+        """Create A New Playlist"""
         request_body = json.dumps({
-            "name": "Youtube songs",
-            "description": "All liked videos from youtube",
+            "name": "Youtube Liked Vids",
+            "description": "All Liked Youtube Videos",
             "public": True
         })
 
@@ -85,7 +83,7 @@ class CreatePlaylist:
         response = requests.post(
             query,
             data=request_body,
-            header={
+            headers={
                 "Content-Type": "application/json",
                 "Authorization": "Bearer {}".format(spotify_token)
             }
@@ -93,10 +91,10 @@ class CreatePlaylist:
         response_json = response.json()
 
         # playlist id
-        return response_json("id")
+        return response_json["id"]
 
-    # search for the song
     def get_spotify_uri(self, song_name, artist):
+        """Search For the Song"""
         query = "https://api.spotify.com/v1/search?query=track%3A{}+artist%3A{}&type=track&offset=0&limit=20".format(
             song_name,
             artist
@@ -111,12 +109,13 @@ class CreatePlaylist:
         response_json = response.json()
         songs = response_json["tracks"]["items"]
 
+        # only use the first song
         uri = songs[0]["uri"]
 
         return uri
-    # add song into spotify playlist
 
     def add_song_to_playlist(self):
+        """Add all liked songs into a new Spotify playlist"""
         # populate dictionary with our liked songs
         self.get_liked_videos()
 
