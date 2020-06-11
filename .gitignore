@@ -1,2 +1,2 @@
 secrets.py
-client_secrets.json
+*.json
