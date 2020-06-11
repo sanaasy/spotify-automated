@@ -11,3 +11,6 @@ Using python, the spotify api and the youtube data api.
 4) ```pip3 install -r requirements.txt``` 
 5) ```python3 run.py``` and follow the link to get authorized by youtube
 6) you will be prompted to select a playlist from youtube and from there it will grab the songs and transfer them to spotify!
+
+# timeline
+June 10th - June 11th
