@@ -38,15 +38,14 @@ class YouTubeClient(object):
         self.youtube_client = youtube_client
 
     def get_playlists(self):
-        request = self.youtube_client.playlist().list(
+        request = self.youtube_client.playlists().list(
             part="id, snippet",
             maxResults=50,
             mine=True
         )
         response = request.execute()
 
-        playlists = [Playlist(item['id'], item['snippet']['title'])
-                     for item in response['items']]
+        playlists = [Playlist(item['id'], item['snippet']['title']) for item in response['items']]
 
         return playlists
 
