@@ -37,6 +37,5 @@ class SpotifyClient(object):
                 "Authorization": f"Bearer {self.api_token}"
             }
         )
-        print(f"{response}")
         
         return response.ok

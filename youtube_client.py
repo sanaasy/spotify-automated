@@ -45,7 +45,8 @@ class YouTubeClient(object):
         )
         response = request.execute()
 
-        playlists = [Playlist(item['id'], item['snippet']['title']) for item in response['items']]
+        playlists = [Playlist(item['id'], item['snippet']['title'])
+                     for item in response['items']]
 
         return playlists
 
